@@ -1,24 +1,25 @@
+### General ###
 HELP.md
-.gradle
+.gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### STS ###
+### STS (Spring Tool Suite) ###
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
-.sts4-cache
+.sts4-cache/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -33,5 +34,35 @@ out/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
+### Visual Studio Code ###
 .vscode/
+
+### Logs ###
+*.log
+logs/
+*.pid
+*.seed
+
+### OS Specific ###
+.DS_Store
+Thumbs.db
+
+### Java ###
+*.class
+
+### Dependency Directories ###
+/node_modules/
+/bower_components/
+
+### Gradle ###
+/.gradle/
+/build/
+
+### Maven ###
+/target/
+
+### Environment Files ###
+.env
+.env.local
+.env.*.local
+*.env
