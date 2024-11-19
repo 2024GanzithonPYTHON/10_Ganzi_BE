@@ -1,0 +1,29 @@
+# ?? ?? ??
+server:
+  port: 8082
+# database ?? ??
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://127:3306/byoun_thinking?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://172.17.0.2:3306/temp
+#    username: cubric
+#    password: cubric
+    username: user
+    password: user
+  thymeleaf:
+    cache: false
+  # spring data jpa ??
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  # file maximum size
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  profiles:
+    include: private
