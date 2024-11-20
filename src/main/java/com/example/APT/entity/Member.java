@@ -36,11 +36,11 @@ public class Member implements UserDetails {
     @OneToMany(mappedBy = "user")
     private Set<Activity> activities;
 
-
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
+    // Static factory method
     public static Member newInstance(String loginId, String password, String address, int age, String name) {
         Member user = new Member();
         user.loginId = loginId;
@@ -51,36 +51,38 @@ public class Member implements UserDetails {
         return user;
     }
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Filter out null or empty roles
         return this.roles.stream()
+                .filter(role -> role != null && !role.isEmpty()) // Filter out invalid roles
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
 
     @Override
     public String getUsername() {
-        return "";
+        return this.loginId;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return true;
     }
 }
+

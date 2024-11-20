@@ -26,8 +26,6 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final BCryptPasswordEncoder passwordEncoder;
 
-//    private final BCryptPasswordEncoder passwordEncoder;
-
     @Transactional
     public MemberSignupResponseDto create(MemberSignupRequestDto request) {
         if (userRepository.existsByLoginId(request.getLoginId())) {
@@ -51,28 +49,15 @@ public class UserService {
 
 
     public MemberLoginResponseDto login(MemberLoginRequestDto request) {
-        try {
-            // 디버깅 로그 추가
-            System.out.println("Attempting to authenticate user with loginId: " + request.getLoginId());
+        // 사용자 인증 로직 구현
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getLoginId(), request.getPassword())
+        );
 
-            // 사용자 인증
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getLoginId(), request.getPassword())
-            );
+        // 토큰 생성
+        TokenDTO tokenDTO = tokenProvider.generateTokenDTO(authentication);
 
-            // 인증 성공 시 로그
-            System.out.println("Authentication successful for user: " + authentication.getName());
-
-            // 토큰 생성
-            TokenDTO tokenDTO = tokenProvider.generateTokenDTO(authentication);
-            return new MemberLoginResponseDto(tokenDTO.getAccessToken(), tokenDTO.getRefreshToken());
-
-        } catch (Exception ex) {
-            // 인증 실패 시 로그
-            System.out.println("Authentication failed for user: " + request.getLoginId());
-            ex.printStackTrace(); // 예외 로그 출력
-            throw ex; // 예외를 다시 던져서 처리
-        }
+        return new MemberLoginResponseDto(tokenDTO.getAccessToken(), tokenDTO.getRefreshToken());
     }
 
     private String generateAccessToken(Integer userId) {
