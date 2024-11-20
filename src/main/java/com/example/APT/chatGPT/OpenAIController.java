@@ -33,7 +33,7 @@ public class OpenAIController {
             remainingCategories.removeAll(interestedCategories);
             String randomCategory = remainingCategories.get(new Random().nextInt(remainingCategories.size()));
 
-            // OpenAIService를 통해 추천 요청
+            // 추천 요청
             List<Map<String, String>> recommendations = openAIService.fetchRecommendations(interestedCategories, randomCategory);
 
             return ResponseEntity.ok(recommendations);

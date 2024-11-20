@@ -1,19 +1,21 @@
 # ?? ?? ??
 server:
   port: 8082
-# database ?? ??
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/temp?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+#    aws
+    url: jdbc:mysql://localhost:3307/test?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+#    aws
 #    url: jdbc:mysql://172.17.0.2:3306/temp
+#    변 로컬
     username: cubric
     password: cubric
+#    aws
 #    username: user
 #    password: user
   thymeleaf:
     cache: false
-  # spring data jpa ??
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     open-in-view: false

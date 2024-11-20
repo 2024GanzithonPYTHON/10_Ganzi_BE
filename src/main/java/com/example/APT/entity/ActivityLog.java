@@ -22,7 +22,7 @@ public class ActivityLog extends BaseTimeEntity{
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Member user;
 
     @OneToOne
     @JoinColumn(name = "activity_id")

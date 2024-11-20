@@ -67,19 +67,17 @@ public class OpenAIService {
                     String assistantId = "asst_ToFrgJ4L0y77ETK6F6J31imW";
                     String responseContent = createRunAndPoll(threadId, assistantId);
 
-                    // URL 결정
                     String imageUrl = determineImageUrl(category);
 
-                    // 응답 데이터 분리
                     String[] lines = responseContent.split("\n", 2);
                     String title = lines[0].trim();
                     String content = lines.length > 1 ? lines[1].trim() : "";
 
-                    // 결과 맵 구성
+                    // 결과
                     Map<String, String> result = new HashMap<>();
-                    result.put("title", title); // 응답의 첫 번째 줄
-                    result.put("content", content); // 나머지 내용
-                    result.put("imageURL", imageUrl); // 이미지 URL
+                    result.put("title", title);
+                    result.put("content", content);
+                    result.put("imageURL", imageUrl);
 
                     return result;
                 } catch (Exception e) {
@@ -88,7 +86,7 @@ public class OpenAIService {
                     if (attempt >= maxRetries) {
                         System.err.println("Failed to process category '" + category + "' after " + attempt + " attempts.");
 
-                        // 실패 시 기본 응답 구성
+                        // 실패 시 기본 응답
                         Map<String, String> fallbackResult = new HashMap<>();
                         fallbackResult.put("title", "Failed to fetch title for: " + category);
                         fallbackResult.put("content", "Failed to fetch response for category: '" + category + "'.");
@@ -108,7 +106,6 @@ public class OpenAIService {
     }
 
     private String determineImageUrl(String category) {
-        // 이미지 URL 매핑
         Map<String, String> imageUrls = Map.ofEntries(
                 Map.entry("종이접기", "https://2024ganziton.s3.ap-northeast-2.amazonaws.com/%EA%B0%84%EC%A7%80%ED%86%A4%EC%82%AC%EC%A7%84/KakaoTalk_20241119_192210984.jpg"),
                 Map.entry("음악놀이", "https://2024ganziton.s3.ap-northeast-2.amazonaws.com/%EA%B0%84%EC%A7%80%ED%86%A4%EC%82%AC%EC%A7%84/KakaoTalk_20241119_192210984_04.jpg"),
@@ -127,51 +124,14 @@ public class OpenAIService {
         return imageUrls.getOrDefault(category, "http://example.com/default.jpg");
     }
 
-    public List<Map<String, String>> formatRecommendations(List<String> recommendations) {
-        // 이미지 URL 매핑
-        Map<String, String> imageUrls = Map.ofEntries(
-                Map.entry("종이접기", "http://example.com/origami.jpg"),
-                Map.entry("음악놀이", "http://example.com/music.jpg"),
-                Map.entry("보물찾기", "http://example.com/treasure.jpg"),
-                Map.entry("숨바꼭질", "http://example.com/hide-seek.jpg"),
-                Map.entry("블록놀이", "http://example.com/block-play.jpg"),
-                Map.entry("그림그리기", "http://example.com/drawing.jpg"),
-                Map.entry("자연탐험", "http://example.com/nature-exploration.jpg"),
-                Map.entry("보드게임", "http://example.com/board-game.jpg"),
-                Map.entry("과학실험", "http://example.com/science-experiment.jpg"),
-                Map.entry("요리놀이", "http://example.com/cooking.jpg"),
-                Map.entry("별보기", "http://example.com/star-gazing.jpg"),
-                Map.entry("영화보기", "http://example.com/movie.jpg")
-        );
-
-        // 결과 변환
-        List<Map<String, String>> formattedResults = new ArrayList<>();
-        for (String recommendation : recommendations) {
-            String[] lines = recommendation.split("\n", 2);
-            String title = lines[0].trim();
-            String content = lines.length > 1 ? lines[1].trim() : "";
-
-            Map<String, String> formatted = new HashMap<>();
-            formatted.put("title", title);
-            formatted.put("content", content);
-            formatted.put("imageURL", imageUrls.getOrDefault(title, "http://example.com/default.jpg"));
-
-            formattedResults.add(formatted);
-        }
-
-        return formattedResults;
-    }
-
     private String fetchMessageValue(String threadId, HttpHeaders headers) {
-        // Fetch messages from the API
         ResponseEntity<String> messagesResponse = restTemplate.exchange(
                 listMessagesUrl.replace("{threadId}", threadId),
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
-                String.class // Fetch raw JSON for debugging
+                String.class
         );
 
-        // Debugging: Print the raw JSON response
         System.out.println("Messages raw response: " + messagesResponse.getBody());
 
         try {
@@ -187,7 +147,7 @@ public class OpenAIService {
                     if (message.getContent() != null && !message.getContent().isEmpty()) {
                         ContentDTO content = message.getContent().get(0);
                         if (content.getText() != null) {
-                            return content.getText().getValue(); // Return the value field
+                            return content.getText().getValue();
                         }
                     }
                 }
@@ -208,7 +168,7 @@ public class OpenAIService {
                     String threadId = createThread();
                     addMessage(threadId, category);
                     String assistantId = "asst_ToFrgJ4L0y77ETK6F6J31imW";
-                    return createRunAndPoll(threadId, assistantId); // Fetch value from API
+                    return createRunAndPoll(threadId, assistantId);
                 } catch (Exception e) {
                     attempt++;
                     System.err.println("Error processing category '" + category + "'. Attempt " + attempt);
@@ -222,9 +182,7 @@ public class OpenAIService {
         });
     }
 
-    /**
-     * OpenAI 스레드 생성
-     */
+    // 쓰레드 생성
     private String createThread() {
         HttpHeaders headers = createHeaders();
         HttpEntity<Void> entity = new HttpEntity<>(headers);
@@ -245,9 +203,7 @@ public class OpenAIService {
         }
     }
 
-    /**
-     * OpenAI 메시지 추가
-     */
+    // 요청 메세지 생성
     private void addMessage(String threadId, String content) {
         if (content == null || content.trim().isEmpty()) {
             throw new IllegalArgumentException("Message content cannot be null or empty");
@@ -268,9 +224,7 @@ public class OpenAIService {
     }
 
 
-    /**
-     * OpenAI Polling 및 결과 가져오기
-     */
+    // 폴링 및 결과 출력
     private String createRunAndPoll(String threadId, String assistantId) {
         HttpHeaders headers = createHeaders();
         RunsRequestDTO runsRequestDTO = new RunsRequestDTO();
@@ -294,17 +248,15 @@ public class OpenAIService {
                 throw new RuntimeException("Run creation failed. No run ID returned.");
             }
 
-            pollForRunCompletion(threadId, runId, headers); // Ensure run is completed
-            return fetchMessageValue(threadId, headers); // Fetch and return value
+            pollForRunCompletion(threadId, runId, headers);
+            return fetchMessageValue(threadId, headers);
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse run creation response", e);
         }
     }
 
 
-    /**
-     * Polling 실행
-     */
+    //
     private String pollForRunCompletion(String threadId, String runId, HttpHeaders headers) {
         String status = "queued";
         int maxRetries = 30;
@@ -346,13 +298,12 @@ public class OpenAIService {
         return "Run completed successfully";
     }
 
-    /**
-     * HTTP 헤더 생성
-     */
+    // http 헤더
     private HttpHeaders createHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(secretKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
+        // beta 헤더
         headers.add("OpenAI-Beta", "assistants=v2");
         return headers;
     }
