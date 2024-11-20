@@ -1,7 +1,7 @@
 package com.example.APT.utils.jwt;
 
-import com.example.APT.controller.dto.MemberSignupRequestDto;
-import com.example.APT.controller.dto.MemberSignupResponseDto;
+import com.example.APT.dto.MemberSignupRequestDto;
+import com.example.APT.dto.MemberSignupResponseDto;
 import com.example.APT.entity.Member;
 import com.example.APT.repository.MemberRepository;
 import jakarta.transaction.Transactional;

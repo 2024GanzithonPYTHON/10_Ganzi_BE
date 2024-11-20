@@ -1,4 +1,4 @@
-package com.example.APT.controller.dto;
+package com.example.APT.dto;
 
 import com.example.APT.entity.Member;
 import jakarta.validation.constraints.NotNull;
@@ -28,6 +28,8 @@ public class MemberSignupRequestDto {
 
     private String name;
 
+    private String childName;
+
     public Member toMember(PasswordEncoder passwordEncoder) {
         return Member.builder()
                 .loginId(this.loginId)
@@ -37,5 +39,4 @@ public class MemberSignupRequestDto {
                 .name(this.name)
                 .build();
     }
-
 }

@@ -1,9 +1,9 @@
 package com.example.APT.service;
 
-import com.example.APT.controller.dto.MemberLoginRequestDto;
-import com.example.APT.controller.dto.MemberLoginResponseDto;
-import com.example.APT.controller.dto.MemberSignupRequestDto;
-import com.example.APT.controller.dto.MemberSignupResponseDto;
+import com.example.APT.dto.MemberLoginRequestDto;
+import com.example.APT.dto.MemberLoginResponseDto;
+import com.example.APT.dto.MemberSignupRequestDto;
+import com.example.APT.dto.MemberSignupResponseDto;
 import com.example.APT.entity.Member;
 import com.example.APT.repository.MemberRepository;
 import com.example.APT.utils.jwt.TokenDTO;
@@ -40,7 +40,8 @@ public class UserService {
                 encodedPassword, // 암호화된 비밀번호 저장
                 request.getAddress(),
                 request.getAge(),
-                request.getName()
+                request.getName(),
+                request.getChildName()
         );
 
         userRepository.save(newUser);

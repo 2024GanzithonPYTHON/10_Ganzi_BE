@@ -7,7 +7,6 @@ public enum ErrorCode {
     INVALID_TOKEN("유효하지 않은 토큰입니다.");
     // 다른 에러 코드 추가 가능
 
-
     private final String message;
 
     ErrorCode(String message) {

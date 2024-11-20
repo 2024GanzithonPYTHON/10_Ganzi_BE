@@ -1,4 +1,4 @@
-package com.example.APT.controller.dto;
+package com.example.APT.dto;
 
 public class MemberLoginResponseDto {
     private String accessToken;
