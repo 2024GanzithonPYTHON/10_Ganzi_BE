@@ -1,0 +1,31 @@
+# ?? ?? ??
+server:
+  port: 8082
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#    aws
+    url: jdbc:mysql://localhost:3307/test?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+#    aws
+#    url: jdbc:mysql://172.17.0.2:3306/temp
+#    변 로컬
+    username: cubric
+    password: cubric
+#    aws
+#    username: user
+#    password: user
+  thymeleaf:
+    cache: false
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  # file maximum size
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  profiles:
+    include: private
