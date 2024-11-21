@@ -1,9 +1,16 @@
 package com.example.APT.service;
 
+
+// import com.example.APT.controller.dto.MemberLoginRequestDto;
+// import com.example.APT.controller.dto.MemberLoginResponseDto;
+// import com.example.APT.controller.dto.MemberSignupRequestDto;
+// import com.example.APT.controller.dto.MemberSignupResponseDto;
+
 import com.example.APT.dto.MemberLoginRequestDto;
 import com.example.APT.dto.MemberLoginResponseDto;
 import com.example.APT.dto.MemberSignupRequestDto;
 import com.example.APT.dto.MemberSignupResponseDto;
+
 import com.example.APT.entity.Member;
 import com.example.APT.repository.MemberRepository;
 import com.example.APT.utils.jwt.TokenDTO;
@@ -24,6 +31,7 @@ public class UserService {
     private final MemberRepository userRepository;
     private final TokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
+
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
@@ -31,6 +39,7 @@ public class UserService {
         if (userRepository.existsByLoginId(request.getLoginId())) {
             throw new DuplicateKeyException("User already exists");
         }
+
 
         // 비밀번호를 BCrypt로 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());

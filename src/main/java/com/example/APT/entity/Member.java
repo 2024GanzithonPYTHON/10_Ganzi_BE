@@ -6,7 +6,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 import java.util.*;
+
 import java.util.stream.Collectors;
 
 @Entity
@@ -23,9 +30,11 @@ public class Member implements UserDetails {
     private String loginId;
     private String password;
     private String address;
+
     private String name;
     private int age;
     private String childName;
+
 
     @OneToMany(mappedBy = "user")
     private Set<UserCategory> userCategories;
@@ -33,17 +42,21 @@ public class Member implements UserDetails {
     @OneToMany(mappedBy = "user")
     private Set<Activity> activities;
 
+
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
+
     public static Member newInstance(String loginId, String password, String address, int age, String name, String childName) {
+
         Member user = new Member();
         user.loginId = loginId;
         user.password = password;
         user.address = address;
         user.age = age;
         user.name = name;
+
         user.childName = childName;
         return user;
     }
@@ -52,32 +65,41 @@ public class Member implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
                 .filter(role -> role != null && !role.isEmpty()) // Filter out invalid roles
+
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
 
     @Override
     public String getUsername() {
+
         return this.loginId;
+
     }
 
     @Override
     public boolean isAccountNonExpired() {
+
         return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
+
         return true;
+
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
+
         return true;
+
     }
 
     @Override
     public boolean isEnabled() {
+
         return true;
     }
 
@@ -107,5 +129,6 @@ public class Member implements UserDetails {
         }
     }
 }
+
 
 

@@ -10,11 +10,20 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import org.springframework.security.core.userdetails.User;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+
 import java.util.*;
+
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,9 +45,14 @@ public class TokenProvider {
     public TokenDTO generateTokenDTO(Authentication authentication) {
         // 권한들 가져오기
         String authorities = authentication.getAuthorities().stream()
+// 충돌로 인한 주석 처리
+//                 .map(GrantedAuthority::getAuthority)
+//                 .collect(Collectors.joining(","));
+
                 .filter(auth -> auth != null && !auth.getAuthority().isEmpty()) // null 또는 빈 권한 필터링
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(",")); // 권한을 쉼표로 구분하여 연결
+
 
         long now = (new Date()).getTime();
 
@@ -57,9 +71,6 @@ public class TokenProvider {
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
 
-        // 로그 출력
-        System.out.println("Generated Access Token: " + accessToken);
-        System.out.println("Generated Refresh Token: " + refreshToken);
 
         return TokenDTO.builder()
                 .grantType(BEARER_TYPE)
@@ -68,6 +79,29 @@ public class TokenProvider {
                 .refreshToken(refreshToken)
                 .build();
     }
+
+
+  // 충돌로 인한 주석 처리
+//     public Authentication getAuthentication(String accessToken) {
+//         // 토큰 복호화
+//         Claims claims = parseClaims(accessToken);
+
+//         if (claims.get(AUTHORITIES_KEY) == null) {
+//             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+//         }
+
+//         // 클레임에서 권한 정보 가져오기
+//         Collection<? extends GrantedAuthority> authorities =
+//                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+//                         .map(SimpleGrantedAuthority::new)
+//                         .collect(Collectors.toList());
+
+//         // UserDetails 객체를 만들어서 Authentication 리턴
+//         UserDetails principal = new User(claims.getSubject(), "", authorities);
+
+//         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+//     }
+
 
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder()
@@ -94,6 +128,7 @@ public class TokenProvider {
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
+
 
 
     public boolean validateToken(String token) {

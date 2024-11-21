@@ -2,6 +2,7 @@ package com.example.APT.repository;
 
 import com.example.APT.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -14,5 +15,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByLoginId(String loginId);
 
     // 특정 ID 존재 여부 확인
+    Optional<Member> findById(Long id);
     boolean existsById(Long id);
 }
