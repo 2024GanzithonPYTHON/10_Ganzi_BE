@@ -19,7 +19,6 @@ public class ActiveLogRequestDto {
     private String oneLine;
 
     private MultipartFile imageFile;
-    private LocalDateTime uploadTime;
 
     private String place;
     

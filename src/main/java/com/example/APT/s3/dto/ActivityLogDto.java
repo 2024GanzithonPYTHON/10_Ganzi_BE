@@ -1,4 +1,4 @@
-package com.example.APT.s3;
+package com.example.APT.s3.dto;
 import com.example.APT.entity.Activity;
 import com.example.APT.entity.Member;
 import lombok.Builder;

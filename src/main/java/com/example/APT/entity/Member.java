@@ -39,9 +39,14 @@ public class Member implements UserDetails {
     @OneToMany(mappedBy = "user")
     private Set<UserCategory> userCategories;
 
-    @OneToMany(mappedBy = "user")
-    private Set<Activity> activities;
+    @OneToMany(mappedBy = "member")
+    private Set<ActivityLog> activityLogs;
 
+    @OneToMany(mappedBy = "member")
+    private Set<Wish> likes;
+
+    @OneToMany(mappedBy = "member")
+    private Set<Activity> activities;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default

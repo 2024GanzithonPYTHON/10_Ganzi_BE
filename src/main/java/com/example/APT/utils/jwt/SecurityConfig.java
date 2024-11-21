@@ -134,12 +134,5 @@ public class SecurityConfig {
 //     }
 // }
 
-    /**
-     * JwtFilter Bean 등록
-     */
-    @Bean
-    public JwtFilter jwtFilter() {
-        return new JwtFilter(tokenProvider);
-    }
 }
 

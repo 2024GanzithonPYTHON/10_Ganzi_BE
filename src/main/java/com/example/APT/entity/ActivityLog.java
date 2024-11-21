@@ -31,8 +31,8 @@ public class ActivityLog extends BaseTimeEntity{
     private String place;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Member user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @OneToOne
     @JoinColumn(name = "activity_id")

@@ -1,4 +1,4 @@
-package com.example.APT.s3;
+package com.example.APT.s3.repository;
 
 import com.example.APT.entity.ActivityLog;
 import org.springframework.data.jpa.repository.JpaRepository;
