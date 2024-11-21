@@ -1,8 +1,13 @@
-package com.example.APT.s3;
+package com.example.APT.s3.service;
 
+import com.example.APT.dto.ActivityLogRequest;
+import com.example.APT.dto.ActivityLogResponse;
+import com.example.APT.repository.MemberRepository;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import com.example.APT.s3.ActivityLogRepository;
+import com.example.APT.s3.repository.ActivityLogRepository;
 import com.example.APT.entity.ActivityLog;
 import com.example.APT.entity.Member;
 import com.example.APT.entity.Activity;
@@ -14,52 +19,70 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ActivityLogService {
 
     private final ActivityLogRepository activityLogRepository;
-
-    @Autowired
-    public ActivityLogService(ActivityLogRepository activityLogRepository) {
-        this.activityLogRepository = activityLogRepository;
-    }
+    private final MemberRepository memberRepository;
 
     // Create
-    public ActivityLog createActivityLog(String content, String oneLine, String imageUrl, LocalDateTime uploadTime, String place,  Member user, Activity activity) {
+    public String createActivityLog(String content, String oneLine, String imageUrl, String place, Member member, Activity activity) {
         ActivityLog activityLog = ActivityLog.builder()
                 .content(content)
                 .oneLine(oneLine)
                 .imageUrl(imageUrl)
-                .uploadTime(uploadTime)
                 .place(place)
-                .user(user)
+                .member(member)
                 .activity(activity)
                 .build();
-        return activityLogRepository.save(activityLog);
+
+        member.getActivityLogs().add(activityLog);
+        return "기록이 정상적으로 저장되었습니다.";
     }
 
-    // Read
-    public Optional<ActivityLog> getActivityLogById(Long id) {
-        return activityLogRepository.findById(id);
+    public ActivityLogResponse getActivityLog(Long id) {
+        ActivityLog activityLog = activityLogRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("활동이 존재하지 않습니다."));
+
+        return new ActivityLogResponse(activityLog);
     }
 
-    public List<ActivityLog> getAllActivityLogs() {
-        return activityLogRepository.findAll();
+    public List<ActivityLogResponse> getAllActivityLogs(UserDetails userDetails) {
+        Member member = memberRepository.findByLoginId(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("사용자가 존재하지 않습니다."));
+
+        List<ActivityLog> activityLogs = member.getActivityLogs().stream()
+                .toList();
+
+        return activityLogs.stream()
+                .map(ActivityLogResponse::new)
+                .toList();
     }
 
     // Update
-    public Optional<ActivityLog> updateActivityLog(Long id, String content, String oneLine) {
+    public Optional<ActivityLog> updateActivityLog(Long id, ActivityLogRequest request, UserDetails userDetails) {
         Optional<ActivityLog> optionalActivityLog = activityLogRepository.findById(id);
+
         if (optionalActivityLog.isPresent()) {
             ActivityLog activityLog = optionalActivityLog.get();
-            activityLog.setContent(content);
-            activityLog.setOneLine(oneLine);
+            activityLog.setContent(request.getContent());
+            activityLog.setOneLine(request.getOneLine());
             return Optional.of(activityLogRepository.save(activityLog));
         }
         return Optional.empty();
     }
 
     // Delete
-    public void deleteActivityLog(Long id) {
+    public String deleteActivityLog(Long id, UserDetails userDetails) {
+        Member member = memberRepository.findByLoginId(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("사용자가 존재하지 않습니다."));
+
+        ActivityLog activityLog = activityLogRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("활동이 존재하지 않습니다."));
+
+        member.getActivityLogs().remove(activityLog);
         activityLogRepository.deleteById(id);
+
+        return "활동 기록 삭제가 정상적으로 실행되었습니다.";
     }
 }

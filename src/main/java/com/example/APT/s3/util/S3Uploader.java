@@ -1,4 +1,4 @@
-package com.example.APT.s3;
+package com.example.APT.s3.util;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;

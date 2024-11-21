@@ -1,4 +1,4 @@
-package com.example.APT.s3;
+package com.example.APT.s3.util;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
