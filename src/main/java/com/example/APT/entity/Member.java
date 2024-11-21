@@ -6,10 +6,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import java.util.*;
+
 import java.util.stream.Collectors;
 
 @Entity
@@ -27,8 +31,10 @@ public class Member implements UserDetails {
     private String password;
     private String address;
 
-    private int age;
     private String name;
+    private int age;
+    private String childName;
+
 
     @OneToMany(mappedBy = "user")
     private Set<UserCategory> userCategories;
@@ -41,46 +47,88 @@ public class Member implements UserDetails {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-    public static Member newInstance(String loginId, String password, String address, int age, String name) {
+
+    public static Member newInstance(String loginId, String password, String address, int age, String name, String childName) {
+
         Member user = new Member();
         user.loginId = loginId;
         user.password = password;
         user.address = address;
         user.age = age;
         user.name = name;
+
+        user.childName = childName;
         return user;
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
+                .filter(role -> role != null && !role.isEmpty()) // Filter out invalid roles
+
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
 
     @Override
     public String getUsername() {
-        return "";
+
+        return this.loginId;
+
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+
+        return true;
+
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+
+        return true;
+
     }
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+
+        return true;
+    }
+
+    // 1. 특정 필드 반환 메서드
+    public Map<String, String> getDetails() {
+        Map<String, String> details = new HashMap<>();
+        details.put("name", this.name);
+        details.put("childName", this.childName);
+        details.put("age", String.valueOf(this.age));
+        details.put("loginId", this.loginId);
+        return details;
+    }
+
+    // 2. 특정 필드 수정 메서드
+    public void updateDetails(String name, String childName, String age, String loginId) {
+        if (name != null && !name.isEmpty()) {
+            this.name = name;
+        }
+        if (childName != null && !childName.isEmpty()) {
+            this.childName = childName;
+        }
+        if (age != null && !age.isEmpty()) {
+            this.age = Integer.parseInt(age);
+        }
+        if (loginId != null && !loginId.isEmpty()) {
+            this.loginId = loginId;
+        }
     }
 }
+
+
+

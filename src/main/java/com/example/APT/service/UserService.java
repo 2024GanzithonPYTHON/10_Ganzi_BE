@@ -1,9 +1,16 @@
 package com.example.APT.service;
 
-import com.example.APT.controller.dto.MemberLoginRequestDto;
-import com.example.APT.controller.dto.MemberLoginResponseDto;
-import com.example.APT.controller.dto.MemberSignupRequestDto;
-import com.example.APT.controller.dto.MemberSignupResponseDto;
+
+// import com.example.APT.controller.dto.MemberLoginRequestDto;
+// import com.example.APT.controller.dto.MemberLoginResponseDto;
+// import com.example.APT.controller.dto.MemberSignupRequestDto;
+// import com.example.APT.controller.dto.MemberSignupResponseDto;
+
+import com.example.APT.dto.MemberLoginRequestDto;
+import com.example.APT.dto.MemberLoginResponseDto;
+import com.example.APT.dto.MemberSignupRequestDto;
+import com.example.APT.dto.MemberSignupResponseDto;
+
 import com.example.APT.entity.Member;
 import com.example.APT.repository.MemberRepository;
 import com.example.APT.utils.jwt.TokenDTO;
@@ -25,27 +32,28 @@ public class UserService {
     private final TokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
 
-//    private final BCryptPasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
     public MemberSignupResponseDto create(MemberSignupRequestDto request) {
-//        String encodedPassword = passwordEncoder.encode(request.getPassword());
         if (userRepository.existsByLoginId(request.getLoginId())) {
             throw new DuplicateKeyException("User already exists");
         }
 
+
+        // 비밀번호를 BCrypt로 암호화
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
         Member newUser = Member.newInstance(
                 request.getLoginId(),
-                request.getPassword(),
-//                encodedPassword,
+                encodedPassword, // 암호화된 비밀번호 저장
                 request.getAddress(),
                 request.getAge(),
-                request.getName()
-
+                request.getName(),
+                request.getChildName()
         );
 
         userRepository.save(newUser);
-
         return MemberSignupResponseDto.of(newUser.getId(), newUser.getLoginId());
     }
 
@@ -61,6 +69,7 @@ public class UserService {
 
         return new MemberLoginResponseDto(tokenDTO.getAccessToken(), tokenDTO.getRefreshToken());
     }
+
     private String generateAccessToken(Integer userId) {
         // 액세스 토큰 생성 로직 구현
         return "access_token_for_user_" + userId; // 예시
