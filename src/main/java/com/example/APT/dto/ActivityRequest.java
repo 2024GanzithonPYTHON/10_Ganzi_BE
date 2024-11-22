@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class ActivityRequest {
     private String imageURL;
-    private String name;
+    private String title;
     private String content;
     private Long categoryId;
 }

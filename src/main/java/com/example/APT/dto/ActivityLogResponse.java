@@ -3,7 +3,7 @@ package com.example.APT.dto;
 import com.example.APT.entity.ActivityLog;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 public class ActivityLogResponse {
@@ -12,7 +12,7 @@ public class ActivityLogResponse {
     private String oneLine;
     private String imageURL;
     private String place;
-    private LocalDateTime uploadTime;
+    private LocalDate uploadTime;
 
 
     public ActivityLogResponse(ActivityLog log) {
@@ -21,6 +21,6 @@ public class ActivityLogResponse {
         this.oneLine = log.getOneLine();
         this.imageURL = log.getImageUrl();
         this.place = log.getPlace();
-        this.uploadTime = log.getUploadTime();
+        this.uploadTime = log.getCreatedDate();
     }
 }

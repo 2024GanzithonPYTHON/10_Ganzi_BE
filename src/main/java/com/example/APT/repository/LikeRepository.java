@@ -9,5 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface LikeRepository extends JpaRepository<Wish, Long> {
-    Optional<Wish> findByMemberAndActivity(Member member, Activity activity);
+//    Optional<Wish> findByMemberAndActivity(Member member, Activity activity);
+
+    Optional<Wish> findByMemberIdAndActivityId(Long memberId, Long activityId);
 }

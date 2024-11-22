@@ -1,12 +1,16 @@
 package com.example.APT.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Activity {
 
     @Id
@@ -15,6 +19,7 @@ public class Activity {
 
     private String imageURL;
     private String title;
+    @Column(length = 10000)
     private String content;
 
     @ManyToOne
