@@ -3,7 +3,9 @@ package com.example.APT.s3.controller;
 //import com.amazonaws.services.s3.AmazonS3;
 
 import com.example.APT.dto.ActivityLogRequest;
+import com.example.APT.dto.ActivityLogResponse;
 import com.example.APT.entity.Activity;
+import com.example.APT.entity.ActivityLog;
 import com.example.APT.entity.Member;
 import com.example.APT.repository.ActivityRepository;
 import com.example.APT.repository.MemberRepository;
@@ -18,6 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,41 +52,41 @@ public class ActivityLogController {
     }
 
     @GetMapping("log")
-    public ResponseEntity<?> getLogList(@RequestParam(value = "activityLogId") Long id) {
+    public ResponseEntity<ActivityLogResponse> getLog(@RequestParam(value = "activityLogId") Long id) {
         try {
             return ResponseEntity.ok(activityLogService.getActivityLog(id));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("/logList")
-    public ResponseEntity<?> getLogList(UserDetails userDetails) {
+    public ResponseEntity<List<ActivityLogResponse>> getLogList(UserDetails userDetails) {
         try {
             return ResponseEntity.ok(activityLogService.getAllActivityLogs(userDetails));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/log")
-    public ResponseEntity<?> deleteLog(@RequestParam(value = "activityLogId") Long id,
+    public ResponseEntity<String> deleteLog(@RequestParam(value = "activityLogId") Long id,
                                         @AuthenticationPrincipal UserDetails userDetails) {
         try {
             return ResponseEntity.ok(activityLogService.deleteActivityLog(id, userDetails));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
 
     @PatchMapping("/log")
-    public ResponseEntity<?> updateLog(@RequestParam(value = "activityLogId") Long id,
-                                       @RequestBody ActivityLogRequest request,
-                                       @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Optional<ActivityLog>> updateLog(@RequestParam(value = "activityLogId") Long id,
+                                                           @RequestBody ActivityLogRequest request,
+                                                           @AuthenticationPrincipal UserDetails userDetails) {
         try {
             return ResponseEntity.ok(activityLogService.updateActivityLog(id, request, userDetails));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
 }
