@@ -27,16 +27,16 @@ public class AuthService {
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    @Transactional
-    public MemberSignupResponseDto signup(MemberSignupRequestDto memberRequestDTO) {
-        if (memberRepository.existsByLoginId(memberRequestDTO.getLoginId())) {
-            throw new CustomException(ErrorCode.DUPLICATE_USER_ID);
-        }
-
-        Member member = memberRequestDTO.toMember(passwordEncoder);
-        Member savedMember = memberRepository.save(member);
-        return MemberSignupResponseDto.of(savedMember.getId(), savedMember.getLoginId());
-    }
+//    @Transactional
+//    public MemberSignupResponseDto signup(MemberSignupRequestDto memberRequestDTO) {
+//        if (memberRepository.existsByLoginId(memberRequestDTO.getLoginId())) {
+//            throw new CustomException(ErrorCode.DUPLICATE_USER_ID);
+//        }
+//
+//        Member member = memberRequestDTO.toMember(passwordEncoder);
+//        Member savedMember = memberRepository.save(member);
+//        return MemberSignupResponseDto.of(savedMember.getId(), savedMember.getLoginId());
+//    }
 
     @Transactional
     public TokenDTO login(MemberSignupRequestDto memberRequestDTO) {

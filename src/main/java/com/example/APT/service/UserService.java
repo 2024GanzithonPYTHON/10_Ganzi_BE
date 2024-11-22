@@ -1,18 +1,16 @@
 package com.example.APT.service;
 
-
-// import com.example.APT.controller.dto.MemberLoginRequestDto;
-// import com.example.APT.controller.dto.MemberLoginResponseDto;
-// import com.example.APT.controller.dto.MemberSignupRequestDto;
-// import com.example.APT.controller.dto.MemberSignupResponseDto;
-
 import com.example.APT.dto.MemberLoginRequestDto;
 import com.example.APT.dto.MemberLoginResponseDto;
 import com.example.APT.dto.MemberSignupRequestDto;
 import com.example.APT.dto.MemberSignupResponseDto;
 
+import com.example.APT.entity.Category;
 import com.example.APT.entity.Member;
+import com.example.APT.entity.UserCategory;
+import com.example.APT.repository.CategoryRepository;
 import com.example.APT.repository.MemberRepository;
+import com.example.APT.repository.UserCategoryRepository;
 import com.example.APT.utils.jwt.TokenDTO;
 import com.example.APT.utils.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +22,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -31,30 +31,49 @@ public class UserService {
     private final MemberRepository userRepository;
     private final TokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
+    private final UserCategoryRepository userCategoryRepository;
 
     private final BCryptPasswordEncoder passwordEncoder;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public MemberSignupResponseDto create(MemberSignupRequestDto request) {
+        // 1. 중복 사용자 체크
         if (userRepository.existsByLoginId(request.getLoginId())) {
-            throw new DuplicateKeyException("User already exists");
+            throw new DuplicateKeyException("User already exists with loginId: " + request.getLoginId());
         }
 
-
-        // 비밀번호를 BCrypt로 암호화
+        // 2. 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
+        // 3. 사용자 엔티티 생성
         Member newUser = Member.newInstance(
                 request.getLoginId(),
-                encodedPassword, // 암호화된 비밀번호 저장
+                encodedPassword, // 암호화된 비밀번호
                 request.getAddress(),
                 request.getAge(),
                 request.getName(),
                 request.getChildName()
         );
 
+        // 4. 사용자 저장
         userRepository.save(newUser);
-        return MemberSignupResponseDto.of(newUser.getId(), newUser.getLoginId());
+
+        // 5. 카테고리 처리
+        List<Category> categories = categoryRepository.findByCategoryNameIn(request.getCategoryNames());
+        categories.forEach(category -> {
+            UserCategory userCategory = new UserCategory();
+            userCategory.setUser(newUser);
+            userCategory.setCategory(category);
+            userCategoryRepository.save(userCategory);
+        });
+
+        // 6. 응답 생성
+        return MemberSignupResponseDto.of(
+                newUser.getId(),
+                newUser.getLoginId(),
+                request.getCategoryNames() // 사용자가 선택한 카테고리 포함
+        );
     }
 
 

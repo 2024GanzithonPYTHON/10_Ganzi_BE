@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberSignupRequestDto {
@@ -23,12 +25,12 @@ public class MemberSignupRequestDto {
     private String password;
 
     private String address;
-
     private int age;
-
     private String name;
-
     private String childName;
+
+    @NotNull(message = "카테고리는 최소 하나 이상 선택해야 합니다.")
+    private List<String> categoryNames; // 관심 카테고리
 
     public Member toMember(PasswordEncoder passwordEncoder) {
         return Member.builder()
@@ -37,6 +39,7 @@ public class MemberSignupRequestDto {
                 .address(this.address)
                 .age(this.age)
                 .name(this.name)
+                .childName(this.childName)
                 .build();
     }
 }
