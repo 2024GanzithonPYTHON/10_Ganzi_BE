@@ -115,7 +115,12 @@ public class SecurityConfig {
         // URL별 권한 설정
         http.authorizeHttpRequests(auth ->
                 auth
-                        .requestMatchers("/user/login", "/user/signup").permitAll() // 로그인과 회원가입은 인증 없이 접근 가능
+                        .requestMatchers("/auth/**",
+                                "/user/signup",
+                                "/user/login",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**").permitAll() // 로그인과 회원가입은 인증 없이 접근 가능
                         .anyRequest().authenticated() // 다른 요청은 인증 필요
         );
 

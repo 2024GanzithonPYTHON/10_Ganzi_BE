@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
@@ -18,4 +19,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     WHERE u.loginId = :userName
 """)
     List<String> findCategoriesByUserName(@Param("userName") String userName);
+
+    List<Category> findByCategoryNameIn(List<String> categoryNames);
+    Optional<Category> findByCategoryName(String categoryName);
 }

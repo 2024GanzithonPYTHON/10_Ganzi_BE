@@ -5,5 +5,8 @@ public class GlobalConstant {
             "/auth/**",
             "/user/signup",
             "/user/login",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**"
     };
 }
