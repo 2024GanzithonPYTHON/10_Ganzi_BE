@@ -1,5 +1,6 @@
 package com.example.APT.service;
 
+import com.example.APT.dto.CategoryRequestDTO;
 import com.example.APT.entity.Category;
 import com.example.APT.entity.Member;
 import com.example.APT.entity.UserCategory;
@@ -12,32 +13,30 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryService {
+public class UserCategoryService {
 
     private final CategoryRepository categoryRepository;
     private final UserCategoryRepository userCategoryRepository;
 
-    // userId를 사용하여 관심 카테고리 조회
-    public List<String> getInterestedCategoriesByUserName(String userName) {
-        return categoryRepository.findCategoriesByUserName(userName);
-    }
+    public void addUserCategories(CategoryRequestDTO categoryRequestDTO, Member currentUser) {
+        List<String> categoryNames = categoryRequestDTO.getCategoryNames(); // DTO에서 카테고리 이름 리스트 추출
 
-    public void addUserCategories(List<String> categoryNames, Member currentUser) {
-        // 1. 모든 카테고리 조회
-        List<Category> categories = categoryRepository.findByCategoryNameIn(categoryNames);
+        for (String categoryName : categoryNames) {
+            Category category = categoryRepository.findByCategoryName(categoryName)
+                    .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다: " + categoryName));
 
-        for (Category category : categories) {
-            // 2. 중복 확인
+            // 중복
             boolean exists = userCategoryRepository.existsByUserAndCategory(currentUser, category);
             if (exists) {
-                continue; // 이미 존재하면 스킵
+                continue;
             }
 
-            // 3. UserCategory 생성 및 저장
             UserCategory userCategory = new UserCategory();
             userCategory.setUser(currentUser);
             userCategory.setCategory(category);
-            userCategoryRepository.save(userCategory);
+
+            userCategoryRepository.save(userCategory); // DB 저장
         }
     }
 }
+
