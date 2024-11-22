@@ -19,6 +19,21 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     WHERE u.loginId = :userName
 """)
     List<String> findCategoriesByUserName(@Param("userName") String userName);
+    @Query("""
+    SELECT c.id
+    FROM Category c
+    JOIN c.userCategories uc
+    JOIN uc.user u
+    WHERE u.loginId = :userName
+""")
+    List<Long> findIdsByUserName(@Param("userName") String userName);
+
+    @Query("""
+    SELECT c.id
+    FROM Category c
+    WHERE c.categoryName = :categoryName
+""")
+    Long findIdByCategoryName(@Param("categoryName") String categoryName);
 
     List<Category> findByCategoryNameIn(List<String> categoryNames);
     Optional<Category> findByCategoryName(String categoryName);

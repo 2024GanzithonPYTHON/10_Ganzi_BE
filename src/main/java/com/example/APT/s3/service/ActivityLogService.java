@@ -31,6 +31,7 @@ public class ActivityLogService {
 
     // Create
     public String createActivityLog(String content, String oneLine, String imageUrl, String place, Member member, Activity activity) {
+        System.out.println("기록 저장 시작");
         log.info("기록 저장 시작");
 
         ActivityLog activityLog = ActivityLog.builder()

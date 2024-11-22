@@ -39,26 +39,29 @@ public class OpenAIService {
         this.restTemplate = restTemplate;
     }
 
-    public List<Map<String, String>> fetchRecommendations(List<String> interestedCategories, String randomCategory) {
+    public List<Map<String, String>> fetchRecommendations(List<String> interestedCategories, List<Long> interestedCategoryIds, String randomCategory) {
         List<CompletableFuture<Map<String, String>>> responses = new ArrayList<>();
 
-        // 관심사 카테고리 요청 처리
-        for (String category : interestedCategories) {
-            responses.add(fetchResponseWithRetryAndUrl(category));
+        int size = Math.min(interestedCategories.size(), interestedCategoryIds.size());
+
+        // 관심사 카테고리 요청 처리 + category
+        for (int i = 0; i < size; i++) {
+            responses.add(fetchResponseWithRetryAndUrl(interestedCategories.get(i), interestedCategoryIds.get(i)));
         }
 
-        // 랜덤 카테고리 요청 처리
-        responses.add(fetchResponseWithRetryAndUrl(randomCategory));
+        Long randomCategoryId = size < interestedCategoryIds.size() ? interestedCategoryIds.get(size) : -1L; // Default ID if not provided
+        responses.add(fetchResponseWithRetryAndUrl(randomCategory, randomCategoryId));
 
         // CompletableFuture의 결과 수집
         return responses.stream()
-                .map(CompletableFuture::join) // 각 요청 완료 대기
+                .map(CompletableFuture::join)
                 .toList();
     }
 
-    private CompletableFuture<Map<String, String>> fetchResponseWithRetryAndUrl(String category) {
+
+    private CompletableFuture<Map<String, String>> fetchResponseWithRetryAndUrl(String category, Long id) {
         return CompletableFuture.supplyAsync(() -> {
-            int maxRetries = 3;
+            int maxRetries = 5;
             int attempt = 0;
             while (attempt < maxRetries) {
                 try {
@@ -69,12 +72,14 @@ public class OpenAIService {
 
                     String imageUrl = determineImageUrl(category);
 
+                    String categoryId = Long.toString(id);
                     String[] lines = responseContent.split("\n", 2);
                     String title = lines[0].trim();
                     String content = lines.length > 1 ? lines[1].trim() : "";
 
                     // 결과
                     Map<String, String> result = new HashMap<>();
+                    result.put("categoryId", categoryId);
                     result.put("title", title);
                     result.put("content", content);
                     result.put("imageURL", imageUrl);
@@ -141,7 +146,6 @@ public class OpenAIService {
                     RootResponseDTO.class
             );
 
-            // Find the first message with the "assistant" role
             for (MessageDTO message : rootResponse.getData()) {
                 if ("assistant".equals(message.getRole())) {
                     if (message.getContent() != null && !message.getContent().isEmpty()) {

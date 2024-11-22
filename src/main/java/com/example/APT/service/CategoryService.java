@@ -21,6 +21,15 @@ public class CategoryService {
     public List<String> getInterestedCategoriesByUserName(String userName) {
         return categoryRepository.findCategoriesByUserName(userName);
     }
+    public List<Long> getInterestedIdsByUserName(String userName) {
+        return categoryRepository.findIdsByUserName(userName);
+    }
+    public Long getInterestedIdByCategoryName(String categoryName) {
+        return categoryRepository.findIdByCategoryName(categoryName);
+    }
+
+
+
 
     public void addUserCategories(List<String> categoryNames, Member currentUser) {
         // 1. 모든 카테고리 조회

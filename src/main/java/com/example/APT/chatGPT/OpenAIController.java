@@ -34,6 +34,8 @@ public class OpenAIController {
             // 2. 사용자 관심 카테고리 조회
             List<String> interestedCategories = categoryService.getInterestedCategoriesByUserName(userId);
 
+            // 2-1.
+            List<Long> interestedCategoryIds = categoryService.getInterestedIdsByUserName(userId);
             // 디버깅용 로그
             System.out.println("사용자 관심 카테고리: " + interestedCategories);
 
@@ -46,8 +48,10 @@ public class OpenAIController {
             remainingCategories.removeAll(interestedCategories);
             String randomCategory = remainingCategories.get(new Random().nextInt(remainingCategories.size()));
 
+            Long randomCategoryId = categoryService.getInterestedIdByCategoryName(randomCategory);
+            interestedCategoryIds.add(randomCategoryId);
             // 4. 추천 요청
-            List<Map<String, String>> recommendations = openAIService.fetchRecommendations(interestedCategories, randomCategory);
+            List<Map<String, String>> recommendations = openAIService.fetchRecommendations(interestedCategories, interestedCategoryIds, randomCategory);
 
             return ResponseEntity.ok(recommendations);
         } catch (Exception e) {

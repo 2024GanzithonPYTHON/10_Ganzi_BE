@@ -30,14 +30,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/activity")
 public class ActivityLogController {
-    private final S3Service s3Service;
     private final S3Uploader s3Uploader;
     private final ActivityLogService activityLogService;
-    private final MemberRepository memberRepository;
     private final GetUserByJwt getUserByJwt;
     private final ActivityRepository activityRepository;
-
-
 
     @PostMapping("/log")
     public ResponseEntity<String> uploadFile(@RequestPart @Valid ActiveLogRequestDto request,
@@ -46,8 +42,12 @@ public class ActivityLogController {
             Member member = getUserByJwt.getCurrentMember();
 
             Activity activity = activityRepository.findById(request.getActivityId()).orElseThrow(() -> new IllegalArgumentException("해당 활동이 존재하지 않습니다."));
+            System.out.println("활동확인");
 
+            // upload 시작
+            System.out.println("업로드 시작");
             String imageUrl = s3Uploader.uploadFileToS3(image, "album");
+            System.out.println("업로드 끝" + imageUrl);
 
             return ResponseEntity.ok(activityLogService.createActivityLog(request.getContent(), request.getOneLine(), request.getPlace(), imageUrl, member, activity));
         } catch (Exception e) {

@@ -1,16 +1,16 @@
 # ?? ?? ??
 server:
-  port: 8080
+  port: 8082
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 #    변 로컬
-    url: jdbc:mysql://localhost:3306/apt?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3307/test?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
 #    aws
 #    url: jdbc:mysql://172.17.0.2:3306/apt
 #    변 로컬
-    username: root
-    password: Neworld21!
+    username: cubric
+    password: cubric
 #    aws
 #    username: user
 #    password: user
