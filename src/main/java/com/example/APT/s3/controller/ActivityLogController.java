@@ -38,16 +38,14 @@ public class ActivityLogController {
     @PostMapping("/log")
     public ResponseEntity<String> uploadFile(@RequestPart @Valid ActiveLogRequestDto request,
                                              @RequestPart(value = "image", required = false)MultipartFile image) {
+        System.out.println(request);
         try {
             Member member = getUserByJwt.getCurrentMember();
 
             Activity activity = activityRepository.findById(request.getActivityId()).orElseThrow(() -> new IllegalArgumentException("해당 활동이 존재하지 않습니다."));
-            System.out.println("활동확인");
 
             // upload 시작
-            System.out.println("업로드 시작");
             String imageUrl = s3Uploader.uploadFileToS3(image, "album");
-            System.out.println("업로드 끝" + imageUrl);
 
             return ResponseEntity.ok(activityLogService.createActivityLog(request.getContent(), request.getOneLine(), request.getPlace(), imageUrl, member, activity));
         } catch (Exception e) {
