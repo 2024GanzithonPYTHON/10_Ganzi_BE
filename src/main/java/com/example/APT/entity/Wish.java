@@ -2,16 +2,14 @@ package com.example.APT.entity;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 @IdClass(WishId.class)
 public class Wish {
 
@@ -24,10 +22,10 @@ public class Wish {
     private Long activityId;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member")
     private Member member;
 
-    @OneToOne
-    @JoinColumn(name = "activity_id")
-    private Activity activity;
+//    @OneToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "activity_id", nullable = false)
+//    private Activity activity;
 }

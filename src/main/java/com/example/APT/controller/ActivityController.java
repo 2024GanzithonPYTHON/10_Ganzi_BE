@@ -3,6 +3,7 @@ package com.example.APT.controller;
 
 import com.example.APT.dto.ActivityRequest;
 import com.example.APT.dto.ActivityResponse;
+import com.example.APT.entity.Activity;
 import com.example.APT.service.ActivityService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,8 +24,10 @@ public class ActivityController {
     @PostMapping("/like")
     public ResponseEntity<String> likeActivity(@AuthenticationPrincipal UserDetails userDetails,
                                           @RequestBody ActivityRequest request) {
+
+        Activity activity = activityService.saveActivity(userDetails, request);
         try {
-            return ResponseEntity.ok(activityService.saveActivity(userDetails, request));
+            return ResponseEntity.ok(activityService.likeActivity(userDetails, activity));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

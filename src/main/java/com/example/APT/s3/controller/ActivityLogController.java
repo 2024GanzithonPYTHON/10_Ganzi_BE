@@ -14,12 +14,14 @@ import com.example.APT.s3.service.ActivityLogService;
 import com.example.APT.s3.util.GetUserByJwt;
 import com.example.APT.s3.util.S3Service;
 import com.example.APT.s3.util.S3Uploader;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,20 +38,23 @@ public class ActivityLogController {
     private final ActivityRepository activityRepository;
 
 
+
     @PostMapping("/log")
-    public ResponseEntity<String> uploadFile(ActiveLogRequestDto request) {
+    public ResponseEntity<String> uploadFile(@RequestPart @Valid ActiveLogRequestDto request,
+                                             @RequestPart(value = "image", required = false)MultipartFile image) {
         try {
             Member member = getUserByJwt.getCurrentMember();
 
             Activity activity = activityRepository.findById(request.getActivityId()).orElseThrow(() -> new IllegalArgumentException("해당 활동이 존재하지 않습니다."));
 
-            String imageUrl = s3Uploader.uploadFileToS3(request.getImageFile(), "폴더 이름");
+            String imageUrl = s3Uploader.uploadFileToS3(image, "album");
 
-            return ResponseEntity.ok(activityLogService.createActivityLog(request.getContent(), request.getOneLine(), imageUrl, request.getPlace(), member, activity));
+            return ResponseEntity.ok(activityLogService.createActivityLog(request.getContent(), request.getOneLine(), request.getPlace(), imageUrl, member, activity));
         } catch (Exception e) {
             return ResponseEntity.status(400).build();
         }
     }
+
 
     @GetMapping("log")
     public ResponseEntity<ActivityLogResponse> getLog(@RequestParam(value = "activityLogId") Long id) {
@@ -61,7 +66,7 @@ public class ActivityLogController {
     }
 
     @GetMapping("/logList")
-    public ResponseEntity<List<ActivityLogResponse>> getLogList(UserDetails userDetails) {
+    public ResponseEntity<List<ActivityLogResponse>> getLogList(@AuthenticationPrincipal UserDetails userDetails) {
         try {
             return ResponseEntity.ok(activityLogService.getAllActivityLogs(userDetails));
         } catch (RuntimeException e) {

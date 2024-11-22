@@ -14,11 +14,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ActiveLogRequestDto {
 
-    private Long id;
     private String content;
     private String oneLine;
 
-    private MultipartFile imageFile;
+//    private MultipartFile imageFile;
 
     private String place;
     
