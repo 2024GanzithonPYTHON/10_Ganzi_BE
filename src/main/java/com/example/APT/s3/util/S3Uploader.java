@@ -3,6 +3,7 @@ package com.example.APT.s3.util;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,23 +28,31 @@ public class S3Uploader {
     /**
      * 로컬 경로에 저장
      */
-    public String uploadFileToS3(MultipartFile multipartFile, String filePath) {
+    public String uploadFileToS3(MultipartFile file, String filePath) {
         // MultipartFile -> File 로 변환
         File uploadFile = null;
+//        try {
+//            uploadFile = convert(multipartFile)
+//                    .orElseThrow(() -> new IllegalArgumentException("[error]: MultipartFile -> 파일 변환 실패"));
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         try {
-            uploadFile = convert(multipartFile)
-                    .orElseThrow(() -> new IllegalArgumentException("[error]: MultipartFile -> 파일 변환 실패"));
+            // 파일 이름
+            String fileName = file.getOriginalFilename();
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(file.getContentType());
+            metadata.setContentLength(file.getSize());
+
+            // 파일 업로드
+            amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
+
+            // 파일 URL
+            return amazonS3Client.getUrl(bucket, fileName).toString();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        // S3에 저장된 파일 이름
-        String fileName = filePath + "/" + UUID.randomUUID();
-
-        // s3로 업로드 후 로컬 파일 삭제
-        String uploadImageUrl = putS3(uploadFile, fileName);
-        removeNewFile(uploadFile);
-        return uploadImageUrl;
     }
 
 
