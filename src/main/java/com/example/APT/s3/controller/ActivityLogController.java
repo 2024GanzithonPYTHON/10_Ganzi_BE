@@ -14,8 +14,10 @@ import com.example.APT.s3.service.ActivityLogService;
 import com.example.APT.s3.util.GetUserByJwt;
 import com.example.APT.s3.util.S3Service;
 import com.example.APT.s3.util.S3Uploader;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/activity")
@@ -47,7 +50,7 @@ public class ActivityLogController {
             // upload 시작
             String imageUrl = s3Uploader.uploadFileToS3(image, "album");
 
-            return ResponseEntity.ok(activityLogService.createActivityLog(request.getContent(), request.getOneLine(), request.getPlace(), imageUrl, member, activity));
+            return ResponseEntity.ok(activityLogService.createActivityLog(request.getContent(), request.getOneLine(), imageUrl, request.getPlace(), member, activity));
         } catch (Exception e) {
             return ResponseEntity.status(400).build();
         }
@@ -83,9 +86,10 @@ public class ActivityLogController {
     }
 
     @PatchMapping("/log")
-    public ResponseEntity<Optional<ActivityLog>> updateLog(@RequestParam(value = "activityLogId") Long id,
+    public ResponseEntity<String> updateLog(@RequestParam(value = "activityLogId") Long id,
                                                            @RequestBody ActivityLogRequest request,
                                                            @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("value up");
         try {
             return ResponseEntity.ok(activityLogService.updateActivityLog(id, request, userDetails));
         } catch (RuntimeException e) {

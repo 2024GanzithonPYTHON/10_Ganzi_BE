@@ -31,12 +31,6 @@ public class S3Uploader {
     public String uploadFileToS3(MultipartFile file, String filePath) {
         // MultipartFile -> File 로 변환
         File uploadFile = null;
-//        try {
-//            uploadFile = convert(multipartFile)
-//                    .orElseThrow(() -> new IllegalArgumentException("[error]: MultipartFile -> 파일 변환 실패"));
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
         try {
             // 파일 이름
             String fileName = file.getOriginalFilename();

@@ -3,7 +3,6 @@ package com.example.APT.s3.service;
 import com.example.APT.dto.ActivityLogRequest;
 import com.example.APT.dto.ActivityLogResponse;
 import com.example.APT.repository.MemberRepository;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,7 @@ import com.example.APT.entity.Member;
 import com.example.APT.entity.Activity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -74,9 +74,9 @@ public class ActivityLogService {
     }
 
     // Update
-    public Optional<ActivityLog> updateActivityLog(Long id, ActivityLogRequest request, UserDetails userDetails) {
-        Member member = memberRepository.findByLoginId(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("사용자가 존재하지 않습니다."));
+    public String updateActivityLog(Long id, ActivityLogRequest request, UserDetails userDetails) {
+//        Member member = memberRepository.findByLoginId(userDetails.getUsername())
+//                .orElseThrow(() -> new RuntimeException("사용자가 존재하지 않습니다."));
 
         Optional<ActivityLog> optionalActivityLog = activityLogRepository.findById(id);
 
@@ -84,9 +84,10 @@ public class ActivityLogService {
             ActivityLog activityLog = optionalActivityLog.get();
             activityLog.setContent(request.getContent());
             activityLog.setOneLine(request.getOneLine());
-            return Optional.of(activityLogRepository.save(activityLog));
+            Optional.of(activityLogRepository.save(activityLog));
+            return "done";
         }
-        return Optional.empty();
+        return "failed patch";
     }
 
     // Delete

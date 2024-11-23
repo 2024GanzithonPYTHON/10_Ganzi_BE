@@ -36,7 +36,7 @@ public class Member implements UserDetails {
     private String childName;
 
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<UserCategory> userCategories;
 
     @OneToMany(mappedBy = "member")
